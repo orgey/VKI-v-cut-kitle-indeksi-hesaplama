@@ -1,94 +1,176 @@
 ﻿using System.Diagnostics;
 
-int boy =1 , kilo = 1;
-float vki;
-var girdi = "";
-
-Console.WriteLine("VKI (vücut kitle indeksi) hesaplama programina hos geldin.");
-Console.WriteLine("Istenen Bilgileri Lutfen Girin");
-
-BoyAlma();
-KiloAlma();
-Hesaplama();
-Siralama();
-Again();
-
-void BoyAlma()
+public class Program
 {
-    Console.Write("Lutfen boyunuzu giriniz (Min: 50cm Max: 300cm): ");
-    girdi = Console.ReadLine();
-    if (int.TryParse(girdi, out int girdiboy) && girdiboy > 50 && girdiboy < 300)
+    struct Hasta
     {
-        boy = girdiboy;
+        public string hastaAdi;
+        public int hastaBoyu;
+        public int hastaKilosu;
+        public float hastaVKI;
+        public string hastaTeshisi;
     }
-    else
-    {
-        Console.WriteLine("Lutfen Gecerli Bir Deger Giriniz.");
-        BoyAlma();
-    }
-}
-void KiloAlma()
-{
-    Console.Write("Lutfen kilonuzu giriniz (Min: 0kg Max: 300kg): ");
-    girdi = Console.ReadLine();
-    if (int.TryParse(girdi, out int girdikilo) && girdikilo > 0 && girdikilo < 300)
-    {
-        kilo = girdikilo;
-    }
-    else
-    {
-        Console.WriteLine("Lutfen Gecerli Bir Deger Giriniz.");
-        KiloAlma();
-    }
-}
-void Hesaplama()
-{
-    
-    vki = kilo/(float)Math.Round(Math.Pow(((float)boy / 100), 2), 2);
- 
-    Console.WriteLine($"Vucut Kitle Indeksiniz: {vki}");
+    static List<Hasta> hastaList = new List<Hasta>();
+    static string girdi = "";
 
-}
-void Siralama()
-{
-    Console.Write("VKI seviyeniz: ");
+    public static void Main()
+    {
+        Console.WriteLine("VKI (vücut kitle indeksi) hesaplama programina hos geldin.");
 
-    if (vki < 18.49)
-    {
-        Console.WriteLine("Zayif");
+        Menu();
+
     }
-    else if (vki<24.99)
+    private static void Menu()
     {
-        Console.WriteLine("Ideal");
+        Console.WriteLine("Hangi Islemi Yapmak Istersiniz?");
+        Console.WriteLine("1 - Yeni Hasta");
+        Console.WriteLine("2 - Hasta Listesi");
+        Console.WriteLine("3 - Cikis");
+        MenuSecimi();
     }
-    else if (vki < 29.99)
+    private static void MenuSecimi()
     {
-        Console.WriteLine("Hafif Kilolu");
+        string secim = Console.ReadLine();
+        switch (secim)
+        {
+            case "1":
+                YeniHasta();
+                break;
+            case "2":
+                HastaListesi();
+                break;
+            case "3":
+                break;
+            default:
+                Console.WriteLine("Yanlis Bir Secim Yaptiniz. Tekrar Deneyiniz.");
+                MenuSecimi();
+                break;
+        }
     }
-    else 
+    static void YeniHasta()
     {
-        Console.WriteLine("Obez");
+        Hasta h = new Hasta();
+        Console.WriteLine("Istenen Bilgileri Lutfen Girin");
+
+        h.hastaAdi = IsimAlma();
+        h.hastaBoyu = BoyAlma();
+        h.hastaKilosu = KiloAlma();
+        h.hastaVKI = Hesaplama(h);
+        h.hastaTeshisi = Siralama(h);
+        hastaList.Add(h);
+        Yazdir(h);
+        MenuDon();
+    }
+    static string IsimAlma()
+    {
+        Console.Write("Lutfen Adinizi Giriniz : ");
+        return Console.ReadLine();
+    }
+    static int BoyAlma()
+    {
+        Console.Write("Lutfen boyunuzu giriniz (Min: 50cm Max: 300cm): ");
+        girdi = Console.ReadLine();
+        if (int.TryParse(girdi, out int girdiboy) && girdiboy > 50 && girdiboy < 300)
+        {
+            return girdiboy;
+        }
+        else
+        {
+            Console.WriteLine("Lutfen Gecerli Bir Deger Giriniz.");
+            return BoyAlma();
+
+        }
+
+
+    }
+    static int KiloAlma()
+    {
+        Console.Write("Lutfen kilonuzu giriniz (Min: 0kg Max: 300kg): ");
+        girdi = Console.ReadLine();
+        if (int.TryParse(girdi, out int girdikilo) && girdikilo > 0 && girdikilo < 300)
+        {
+            return girdikilo;
+        }
+        else
+        {
+            Console.WriteLine("Lutfen Gecerli Bir Deger Giriniz.");
+            return KiloAlma();
+        }
+    }
+    static float Hesaplama(Hasta h)
+    {
+        return (h.hastaKilosu / (float)Math.Round(Math.Pow(((float)h.hastaBoyu / 100), 2), 2));
+    }
+    static string Siralama(Hasta h)
+    {
+        float vki = h.hastaVKI;
+        if (vki < 18.49)
+        {
+            return "Zayif";
+        }
+        else if (vki < 24.99)
+        {
+            return "Normal";
+        }
+
+        else if (vki < 29.99)
+        {
+            return "Hafif Kilolu";
+        }
+        else
+        {
+            return "Obez";
+        }
+    }
+    private static void Yazdir(Hasta h)
+    {
+        RenkDegistir(h);
+        Console.WriteLine($"Hasta : {h.hastaAdi}, Boyu : {h.hastaBoyu}," +
+            $" Kilosu : {h.hastaKilosu}, VKI Indexi : {h.hastaVKI}, " +
+            $"Teshis: {h.hastaTeshisi}");
+        ResetRenk();
     }
 
-}
-void Again()
-{
-    Console.WriteLine("Yeni bir hesaplama yapmak istiyor musunuz? (E/H)");
-    girdi = Console.ReadLine();
-    girdi = girdi.ToLower();
-    if (girdi == "e")
+    private static void RenkDegistir(Hasta h)
     {
+        switch (h.hastaTeshisi)
+        {
+            case "Zayif":
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                break;
+            case "Normal":
+                Console.ForegroundColor = ConsoleColor.Green;
+                break;
+            case "Hafif Kilolu":
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                break;
+            case "Obez":
+                Console.ForegroundColor = ConsoleColor.Red;
+                break;
+            default:
+                break;
+        }
+    }
+    static void ResetRenk()
+    {
+        Console.ResetColor();
+    }
+
+    static void MenuDon()
+    {
+        Console.WriteLine("Menuye Donmek Icin Enter'a Basin.");
+        Console.ReadLine();
         Console.Clear();
-        Process.Start("VKI (vücut kitle indeksi) hesaplama", "");
+        Menu();
     }
-    else if (girdi == "h")
+
+    private static void HastaListesi()
     {
-        Environment.Exit(0);
-    }
-    else
-    {
-        Console.WriteLine("Hatali Giris Yaptiniz");
-        Again();
+        foreach (var h in hastaList)
+        {
+            Yazdir(h);
+        }
+        MenuDon();
     }
 
 }
